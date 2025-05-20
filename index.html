@@ -514,10 +514,10 @@
     <!-- Student Details Panel -->
     <div id="student-details" class="student-details">
       <h3>Student Details</h3>
-      <p><strong>Tree Marker:</strong> Thuduwage I.M.H.G</p>
-      <p><strong>Playground Marker:</strong> Arandara.S.D</p>
-      <p><strong>Flowers Marker:</strong> Karunarathne R.Y.D.</p>
-      <p><strong>Fountain Marker:</strong> Kodithuwakku C.K.</p>
+      <p><strong>Standing Desk:</strong> Thuduwage I.M.H.G</p>
+      <p><strong>Coffee Maker:</strong> Arandara.S.D</p>
+      <p><strong>Office Plant:</strong> Karunarathne R.Y.D.</p>
+      <p><strong>Office Chair:</strong> Kodithuwakku C.K.</p>
     </div>
 
     <div id="info-panel" class="info-panel">
@@ -553,159 +553,119 @@
       <a-assets>
         <!-- Sound effects -->
         <audio
-          id="bird-sound"
-          src="sounds/bird-chirping.mp3"
+          id="office-ambience"
+          src="sounds/office_ambience.mp3"
           preload="auto"
         ></audio>
         <audio
-          id="fountain-sound"
-          src="sounds/fountain.mp3"
+          id="coffee-brewing"
+          src="sounds/coffee_brewing.mp3"
           preload="auto"
         ></audio>
         <audio
-          id="children-sound"
-          src="sounds/children-playing.mp3"
+          id="chair-adjustment"
+          src="sounds/chair_adjustment.mp3"
           preload="auto"
         ></audio>
         <audio
-          id="nature-sound"
-          src="sounds/nature-ambience.mp3"
+          id="desk-adjustment"
+          src="sounds/desk_adjustment.mp3"
           preload="auto"
         ></audio>
 
-        <!-- 3D models - Update these paths to your actual model files -->
-        <a-asset-item id="tree-model" src="models/tree.glb"></a-asset-item>
-        <a-asset-item id="bench-model" src="models/bench.glb"></a-asset-item>
+        <!-- 3D models -->
         <a-asset-item
-          id="fountain-model"
-          src="models/horse_fountain.glb"
+          id="standing-desk-model"
+          src="models/standing_desk.glb"
         ></a-asset-item>
         <a-asset-item
-          id="playground-model"
-          src="models/playground_set.glb"
+          id="coffee-maker-model"
+          src="models/coffee_maker.glb"
         ></a-asset-item>
         <a-asset-item
-          id="flowers-model"
-          src="models/flowers.glb"
+          id="office-plant-model"
+          src="models/office_plant.glb"
         ></a-asset-item>
-        <a-asset-item id="flower-model" src="models/flower.glb"></a-asset-item>
         <a-asset-item
-          id="colored-flower-model"
-          src="models/colored_flower.glb"
+          id="office-chair-model"
+          src="models/office_chair.glb"
         ></a-asset-item>
       </a-assets>
 
-      <!-- Tree Marker -->
+      <!-- Standing Desk Marker -->
       <!-- Member: Thuduwage I.M.H.G -->
-      <a-marker type="pattern" id="tree-marker" url="markers/tree-marker.patt">
+      <a-marker type="pattern" id="desk-marker" url="markers/tree-marker.patt">
         <a-entity
           position="0 0 0"
-          scale="0.7 0.7 0.7"
+          scale="1 1 1"
           rotation="0 0 0"
-          gltf-model="#tree-model"
-          clickable="name: Park Tree"
+          gltf-model="#standing-desk-model"
+          clickable="name: Standing Desk"
           animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
         >
         </a-entity>
         <a-entity
-          sound="src: #bird-sound; autoplay: true; loop: true; volume: 0.5"
+          sound="src: #desk-adjustment; autoplay: true; loop: true; volume: 0.3"
         ></a-entity>
       </a-marker>
 
-      <!-- Playground Slide Marker -->
+      <!-- Coffee Maker Marker -->
       <!-- Member: Arandara.S.D -->
       <a-marker
         type="pattern"
-        url="markers/playground-marker.patt"
-        id="playground-marker"
-      >
-        <a-entity
-          position="0 0 0"
-          scale="9 9 9"
-          rotation="0 0 0"
-          gltf-model="#playground-model"
-          clickable="name: Playground Slide"
-        >
-        </a-entity>
-        <a-entity
-          sound="src: #children-sound; autoplay: true; loop: true; volume: 0.5"
-        ></a-entity>
-      </a-marker>
-
-      <!-- Flowers Marker -->
-      <!-- Member: Karunarathne R.Y.D. -->
-      <a-marker
-        type="pattern"
-        url="markers/flowers-marker.patt"
-        id="flowers-marker"
-      >
-        <a-entity
-          position="-0.5 0 0"
-          scale="0.8 0.8 0.8"
-          rotation="0 0 0"
-          gltf-model="#flowers-model"
-          clickable="name: Flower Bed"
-        >
-        </a-entity>
-        <a-entity
-          position="1 0 0"
-          scale="0.01 0.01 0.01"
-          rotation="0 0 0"
-          gltf-model="#flower-model"
-          clickable="name: Flower Bed"
-        >
-        </a-entity>
-        <a-entity
-          position="0 0 0.5"
-          scale="0.01 0.01 0.01"
-          rotation="0 0 0"
-          gltf-model="#colored-flower-model"
-          clickable="name: Flower Bed"
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- Fountain Marker -->
-      <!-- Member: Kodithuwakku C.K. -->
-      <a-marker
-        type="pattern"
         url="markers/fountain-marker.patt"
-        id="fountain-marker"
+        id="coffee-marker"
       >
         <a-entity
           position="0 0 0"
           scale="1 1 1"
           rotation="0 0 0"
-          gltf-model="#fountain-model"
-          clickable="name: Fountain"
+          gltf-model="#coffee-maker-model"
+          clickable="name: Coffee Maker"
         >
         </a-entity>
         <a-entity
-          sound="src: #fountain-sound; autoplay: true; loop: true; volume: 0.5"
+          sound="src: #coffee-brewing; autoplay: true; loop: true; volume: 0.4"
         ></a-entity>
       </a-marker>
 
-      <!-- Bench Marker -->
-      <!-- Member: Doranegoda D.A.K.S.M -->
+      <!-- Office Plant Marker -->
+      <!-- Member: Karunarathne R.Y.D. -->
       <a-marker
         type="pattern"
-        id="bench-marker"
-        url="markers/bench-marker.patt"
+        url="markers/flowers-marker.patt"
+        id="plant-marker"
       >
-        <!-- Bench 3D model -->
         <a-entity
           position="0 0 0"
-          scale="0.8 0.8 0.8"
+          scale="1 1 1"
           rotation="0 0 0"
-          gltf-model="#bench-model"
-          clickable="name: Park Bench"
-          animation="property: position; to: 0 0.3 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutQuad"
+          gltf-model="#office-plant-model"
+          clickable="name: Office Plant"
         >
         </a-entity>
-
-        <!-- Nature ambient sound -->
         <a-entity
-          sound="src: #nature-sound; autoplay: true; loop: true; volume: 0.3"
+          sound="src: #office-ambience; autoplay: true; loop: true; volume: 0.2"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Office Chair Marker -->
+      <!-- Member: Kodithuwakku C.K. -->
+      <a-marker
+        type="pattern"
+        url="markers/bench-marker.patt"
+        id="chair-marker"
+      >
+        <a-entity
+          position="0 0 0"
+          scale="1 1 1"
+          rotation="0 0 0"
+          gltf-model="#office-chair-model"
+          clickable="name: Office Chair"
+        >
+        </a-entity>
+        <a-entity
+          sound="src: #chair-adjustment; autoplay: true; loop: true; volume: 0.3"
         ></a-entity>
       </a-marker>
 
