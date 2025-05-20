@@ -14,16 +14,36 @@
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.9/dist/aframe-particle-system-component.min.js"></script>
     <style>
       :root {
-        --primary-color: #2563eb;
-        --secondary-color: #3b82f6;
-        --accent-color: #60a5fa;
-        --background-dark: #1e293b;
+        --primary-color: #6366f1;
+        --secondary-color: #818cf8;
+        --accent-color: #a5b4fc;
+        --background-dark: #0f172a;
+        --background-darker: #020617;
         --text-light: #f8fafc;
-        --text-dark: #0f172a;
+        --text-muted: #94a3b8;
         --success-color: #22c55e;
         --error-color: #ef4444;
-        --border-radius: 12px;
+        --border-radius: 16px;
         --transition-speed: 0.3s;
+        --glass-bg: rgba(15, 23, 42, 0.85);
+        --glass-border: rgba(148, 163, 184, 0.1);
+        --glass-shadow: rgba(0, 0, 0, 0.3);
+      }
+
+      /* Base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: fixed;
+        background-color: var(--background-darker);
       }
 
       #arjsDebugUIContainer {
@@ -37,45 +57,49 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(
-          135deg,
-          var(--background-dark),
-          var(--primary-color)
-        );
+        background: var(--background-darker);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 9999;
         transition: opacity 0.5s ease-out;
+        padding: 1rem;
       }
 
       .loading-title {
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
         color: var(--text-light);
-        margin-bottom: 2rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        letter-spacing: -0.5px;
+        margin-bottom: clamp(1rem, 3vw, 2rem);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        letter-spacing: -1px;
+        background: linear-gradient(
+          to right,
+          var(--text-light),
+          var(--accent-color)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
       }
 
       .spinner {
-        width: 50px;
-        height: 50px;
-        border: 3px solid rgba(255, 255, 255, 0.1);
+        width: clamp(40px, 8vw, 60px);
+        height: clamp(40px, 8vw, 60px);
+        border: 4px solid rgba(148, 163, 184, 0.1);
         border-radius: 50%;
-        border-top-color: var(--text-light);
+        border-top-color: var(--accent-color);
         animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
       }
 
       .loading-progress {
-        width: 80%;
-        max-width: 300px;
-        height: 6px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-        margin-top: 2rem;
+        width: min(80%, 300px);
+        height: 8px;
+        background-color: rgba(148, 163, 184, 0.1);
+        border-radius: 4px;
+        margin-top: clamp(1rem, 3vw, 2rem);
         overflow: hidden;
       }
 
@@ -88,14 +112,17 @@
           var(--primary-color)
         );
         transition: width 0.3s ease;
+        border-radius: 4px;
       }
 
       .loading-text {
-        color: var(--text-light);
+        color: var(--text-muted);
         margin-top: 1rem;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 0.9rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
         opacity: 0.8;
+        font-weight: 500;
+        text-align: center;
       }
 
       @keyframes spin {
@@ -107,47 +134,50 @@
       /* Enhanced UI Styles */
       .instructions {
         position: fixed;
-        top: 1rem;
+        top: clamp(1rem, 3vw, 1.5rem);
         width: 100%;
         text-align: center;
         color: var(--text-light);
-        background: rgba(30, 41, 59, 0.8);
-        padding: 1rem;
+        background: var(--glass-bg);
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
         z-index: 999;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
         border-radius: var(--border-radius);
-        max-width: 90%;
+        max-width: min(90%, 600px);
         margin: 0 auto;
         left: 0;
         right: 0;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        font-weight: 500;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        border: 1px solid var(--glass-border);
+        font-weight: 600;
+        font-size: clamp(0.875rem, 2vw, 1.1rem);
+        letter-spacing: 0.5px;
       }
 
       .info-panel {
         position: fixed;
-        bottom: 1.5rem;
-        left: 1.5rem;
-        background: rgba(30, 41, 59, 0.9);
+        bottom: clamp(1rem, 3vw, 2rem);
+        left: clamp(1rem, 3vw, 2rem);
+        background: var(--glass-bg);
         color: var(--text-light);
-        padding: 1.25rem;
+        padding: clamp(1rem, 3vw, 1.5rem);
         border-radius: var(--border-radius);
         z-index: 999;
         display: none;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         transform: translateY(20px);
         opacity: 0;
         transition: transform var(--transition-speed)
             cubic-bezier(0.4, 0, 0.2, 1),
           opacity var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        max-width: min(300px, 90vw);
+        width: 100%;
       }
 
       .info-panel.visible {
@@ -157,37 +187,39 @@
 
       .buttons {
         position: fixed;
-        bottom: 1.5rem;
-        right: 1.5rem;
+        bottom: clamp(1rem, 3vw, 2rem);
+        right: clamp(1rem, 3vw, 2rem);
         z-index: 999;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: clamp(0.5rem, 2vw, 1rem);
       }
 
       .ar-button {
-        padding: 0.75rem 1.25rem;
-        background: rgba(37, 99, 235, 0.9);
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+        background: var(--glass-bg);
         color: var(--text-light);
-        border: none;
+        border: 1px solid var(--glass-border);
         border-radius: var(--border-radius);
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
         font-weight: 600;
-        font-size: 0.875rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
         cursor: pointer;
         transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
       }
 
       .ar-button:hover {
-        background: rgba(37, 99, 235, 1);
+        background: var(--primary-color);
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 12px 40px var(--glass-shadow);
+        border-color: var(--accent-color);
       }
 
       .ar-button:active {
@@ -197,64 +229,169 @@
       /* Marker detection indicator */
       .marker-indicator {
         position: fixed;
-        top: 5rem;
-        right: 1.5rem;
-        background: rgba(30, 41, 59, 0.9);
+        top: clamp(4rem, 8vw, 6rem);
+        right: clamp(1rem, 3vw, 2rem);
+        background: var(--glass-bg);
         color: var(--text-light);
-        padding: 0.75rem 1rem;
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
         border-radius: var(--border-radius);
         z-index: 999;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
         display: none;
         align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.875rem;
+        gap: 0.75rem;
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        font-weight: 500;
+        max-width: min(300px, 90vw);
       }
 
       .indicator-dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background-color: var(--error-color);
         transition: background-color var(--transition-speed) ease;
+        box-shadow: 0 0 10px var(--error-color);
       }
 
       .indicator-dot.active {
         background-color: var(--success-color);
+        box-shadow: 0 0 10px var(--success-color);
       }
 
       /* Toast notification */
       .toast {
         position: fixed;
-        top: 5rem;
+        top: clamp(4rem, 8vw, 6rem);
         left: 50%;
         transform: translateX(-50%) translateY(-100px);
-        background: rgba(30, 41, 59, 0.95);
+        background: var(--glass-bg);
         color: var(--text-light);
-        padding: 0.75rem 1.5rem;
+        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
         border-radius: var(--border-radius);
         z-index: 1000;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
         opacity: 0;
         transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
           opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.875rem;
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        font-size: clamp(0.875rem, 2vw, 1rem);
         font-weight: 500;
+        text-align: center;
+        min-width: min(200px, 90vw);
+        max-width: min(400px, 90vw);
       }
 
       .toast.show {
         transform: translateX(-50%) translateY(0);
         opacity: 1;
+      }
+
+      /* Team Info Panel */
+      .team-info {
+        position: fixed;
+        top: clamp(4rem, 8vw, 6rem);
+        left: clamp(1rem, 3vw, 2rem);
+        background: var(--glass-bg);
+        color: var(--text-light);
+        padding: clamp(1rem, 3vw, 1.5rem);
+        border-radius: var(--border-radius);
+        z-index: 999;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        box-shadow: 0 8px 32px var(--glass-shadow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        max-width: min(300px, 90vw);
+        width: 100%;
+        display: none;
+      }
+
+      .team-info.visible {
+        display: block;
+      }
+
+      .team-member {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .team-member:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .team-member h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: clamp(1rem, 2vw, 1.1rem);
+        color: var(--accent-color);
+      }
+
+      .team-member p {
+        margin: 0;
+        font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        color: var(--text-muted);
+      }
+
+      /* Media Queries */
+      @media (max-width: 480px) {
+        .buttons {
+          bottom: 1rem;
+          right: 1rem;
+        }
+
+        .info-panel {
+          bottom: 1rem;
+          left: 1rem;
+        }
+
+        .team-info {
+          top: 4rem;
+          left: 1rem;
+        }
+
+        .marker-indicator {
+          top: 4rem;
+          right: 1rem;
+        }
+
+        .toast {
+          top: 4rem;
+        }
+      }
+
+      @media (max-height: 600px) {
+        .loading-title {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .spinner {
+          width: 40px;
+          height: 40px;
+        }
+
+        .loading-progress {
+          margin-top: 1rem;
+        }
+      }
+
+      /* Dark mode specific styles */
+      a-scene {
+        background-color: var(--background-darker) !important;
+      }
+
+      .a-loader-title {
+        display: none !important;
       }
     </style>
 
@@ -452,6 +589,22 @@
           });
         }, 5000); // Wait for AR.js to initialize
       });
+
+      // Add team info toggle function
+      function toggleTeamInfo() {
+        const teamInfo = document.querySelector(".team-info");
+        teamInfo.classList.toggle("visible");
+      }
+
+      // Update the buttons section in the HTML to include team info button
+      document.addEventListener("DOMContentLoaded", function () {
+        const buttonsDiv = document.querySelector(".buttons");
+        const teamButton = document.createElement("button");
+        teamButton.className = "ar-button";
+        teamButton.innerHTML = "Team Info";
+        teamButton.onclick = toggleTeamInfo;
+        buttonsDiv.appendChild(teamButton);
+      });
     </script>
   </head>
   <body style="margin: 0; overflow: hidden">
@@ -469,6 +622,29 @@
 
     <div id="info-panel" class="info-panel">
       <span id="info-text">Object information</span>
+    </div>
+
+    <div class="team-info">
+      <div class="team-member">
+        <h3>Thuduwage I.M.H.G</h3>
+        <p>IT21169380</p>
+        <p>it21169380@my.sliit.lk</p>
+      </div>
+      <div class="team-member">
+        <h3>Arandara S.D</h3>
+        <p>IT21164330</p>
+        <p>it21164330@my.sliit.lk</p>
+      </div>
+      <div class="team-member">
+        <h3>Karunarathne R.Y.D</h3>
+        <p>IT21169144</p>
+        <p>it21169144@my.sliit.lk</p>
+      </div>
+      <div class="team-member">
+        <h3>Kodithuwakku C.K</h3>
+        <p>IT21156960</p>
+        <p>it21156960@my.sliit.lk</p>
+      </div>
     </div>
 
     <div class="marker-indicator">
@@ -515,7 +691,7 @@
           preload="auto"
         ></audio>
 
-        <!-- 3D models - Update these paths to your actual model files -->
+        <!-- 3D models -->
         <a-asset-item id="tree-model" src="models/tree.glb"></a-asset-item>
         <a-asset-item id="bench-model" src="models/bench.glb"></a-asset-item>
         <a-asset-item
@@ -538,9 +714,8 @@
       </a-assets>
 
       <!-- Tree Marker -->
-      <!-- Member: Palliyaguru P.N.A -->
+      <!-- Member: Thuduwage I.M.H.G -->
       <a-marker type="pattern" id="tree-marker" url="markers/tree-marker.patt">
-        <!-- Tree 3D model -->
         <a-entity
           position="0 0 0"
           scale="0.7 0.7 0.7"
@@ -550,21 +725,18 @@
           animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
         >
         </a-entity>
-
-        <!-- Bird sound on this marker -->
         <a-entity
           sound="src: #bird-sound; autoplay: true; loop: true; volume: 0.5"
         ></a-entity>
       </a-marker>
 
       <!-- Playground Slide Marker -->
-      <!-- Member: Maleesha K.L.D.D.S -->
+      <!-- Member: Arandara S.D -->
       <a-marker
         type="pattern"
         url="markers/playground-marker.patt"
         id="playground-marker"
       >
-        <!-- Slide 3D model -->
         <a-entity
           position="0 0 0"
           scale="9 9 9"
@@ -573,21 +745,18 @@
           clickable="name: Playground Slide"
         >
         </a-entity>
-
-        <!-- Children playing sound -->
         <a-entity
           sound="src: #children-sound; autoplay: true; loop: true; volume: 0.5"
         ></a-entity>
       </a-marker>
 
       <!-- Flowers Marker -->
-      <!-- Member: Heshan W.A.S -->
+      <!-- Member: Karunarathne R.Y.D -->
       <a-marker
         type="pattern"
         url="markers/flowers-marker.patt"
         id="flowers-marker"
       >
-        <!-- Flowers 3D model -->
         <a-entity
           position="-0.5 0 0"
           scale="0.8 0.8 0.8"
@@ -596,7 +765,6 @@
           clickable="name: Flower Bed"
         >
         </a-entity>
-
         <a-entity
           position="1 0 0"
           scale="0.01 0.01 0.01"
@@ -605,7 +773,6 @@
           clickable="name: Flower Bed"
         >
         </a-entity>
-
         <a-entity
           position="0 0 0.5"
           scale="0.01 0.01 0.01"
@@ -617,13 +784,12 @@
       </a-marker>
 
       <!-- Fountain Marker -->
-      <!-- Member: Nadeeshan I.U.N -->
+      <!-- Member: Kodithuwakku C.K -->
       <a-marker
         type="pattern"
         url="markers/fountain-marker.patt"
         id="fountain-marker"
       >
-        <!-- Fountain 3D model -->
         <a-entity
           position="0 0 0"
           scale="1 1 1"
@@ -632,33 +798,8 @@
           clickable="name: Fountain"
         >
         </a-entity>
-
         <a-entity
           sound="src: #fountain-sound; autoplay: true; loop: true; volume: 0.5"
-        ></a-entity>
-      </a-marker>
-
-      <!-- Bench Marker -->
-      <!-- Member: Doranegoda D.A.K.S.M -->
-      <a-marker
-        type="pattern"
-        id="bench-marker"
-        url="markers/bench-marker.patt"
-      >
-        <!-- Bench 3D model -->
-        <a-entity
-          position="0 0 0"
-          scale="0.8 0.8 0.8"
-          rotation="0 0 0"
-          gltf-model="#bench-model"
-          clickable="name: Park Bench"
-          animation="property: position; to: 0 0.3 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutQuad"
-        >
-        </a-entity>
-
-        <!-- Nature ambient sound -->
-        <a-entity
-          sound="src: #nature-sound; autoplay: true; loop: true; volume: 0.3"
         ></a-entity>
       </a-marker>
 
