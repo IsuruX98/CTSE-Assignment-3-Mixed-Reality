@@ -514,9 +514,9 @@
     <!-- Student Details Panel -->
     <div id="student-details" class="student-details">
       <h3>Student Details</h3>
-      <p><strong>Standing Desk:</strong> Thuduwage I.M.H.G</p>
+      <p><strong>Laptop:</strong> Thuduwage I.M.H.G</p>
       <p><strong>Coffee Maker:</strong> Arandara.S.D</p>
-      <p><strong>Office Plant:</strong> Karunarathne R.Y.D.</p>
+      <p><strong>Lamp:</strong> Karunarathne R.Y.D.</p>
       <p><strong>Office Chair:</strong> Kodithuwakku C.K.</p>
     </div>
 
@@ -549,6 +549,11 @@
       arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;"
       style="border-radius: 20px; overflow: hidden"
     >
+      <!-- Background Office Ambience -->
+      <a-entity
+        sound="src: #office-ambience; autoplay: true; loop: true; volume: 0.2"
+      ></a-entity>
+
       <!-- Asset Management System -->
       <a-assets>
         <!-- Sound effects -->
@@ -558,8 +563,18 @@
           preload="auto"
         ></audio>
         <audio
+          id="keyboard-typing"
+          src="sounds/keyboard_typing.mp3"
+          preload="auto"
+        ></audio>
+        <audio
           id="coffee-brewing"
           src="sounds/coffee_brewing.mp3"
+          preload="auto"
+        ></audio>
+        <audio
+          id="lamp-switch"
+          src="sounds/lamp_switch.mp3"
           preload="auto"
         ></audio>
         <audio
@@ -567,24 +582,16 @@
           src="sounds/chair_adjustment.mp3"
           preload="auto"
         ></audio>
-        <audio
-          id="desk-adjustment"
-          src="sounds/desk_adjustment.mp3"
-          preload="auto"
-        ></audio>
 
         <!-- 3D models -->
-        <a-asset-item
-          id="standing-desk-model"
-          src="models/standing_desk.glb"
-        ></a-asset-item>
+        <a-asset-item id="laptop-model" src="models/laptop.glb"></a-asset-item>
         <a-asset-item
           id="coffee-maker-model"
           src="models/coffee_maker.glb"
         ></a-asset-item>
         <a-asset-item
-          id="office-plant-model"
-          src="models/office_plant.glb"
+          id="lamp-model"
+          src="models/office_lamp.glb"
         ></a-asset-item>
         <a-asset-item
           id="office-chair-model"
@@ -592,20 +599,24 @@
         ></a-asset-item>
       </a-assets>
 
-      <!-- Standing Desk Marker -->
+      <!-- Laptop Marker -->
       <!-- Member: Thuduwage I.M.H.G -->
-      <a-marker type="pattern" id="desk-marker" url="markers/tree-marker.patt">
+      <a-marker
+        type="pattern"
+        id="laptop-marker"
+        url="markers/tree-marker.patt"
+      >
         <a-entity
           position="0 0 0"
           scale="1 1 1"
           rotation="0 0 0"
-          gltf-model="#standing-desk-model"
-          clickable="name: Standing Desk"
+          gltf-model="#laptop-model"
+          clickable="name: Laptop"
           animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
         >
         </a-entity>
         <a-entity
-          sound="src: #desk-adjustment; autoplay: true; loop: true; volume: 0.3"
+          sound="src: #keyboard-typing; autoplay: true; loop: true; volume: 0.3"
         ></a-entity>
       </a-marker>
 
@@ -629,23 +640,23 @@
         ></a-entity>
       </a-marker>
 
-      <!-- Office Plant Marker -->
+      <!-- Lamp Marker -->
       <!-- Member: Karunarathne R.Y.D. -->
       <a-marker
         type="pattern"
         url="markers/flowers-marker.patt"
-        id="plant-marker"
+        id="lamp-marker"
       >
         <a-entity
           position="0 0 0"
           scale="1 1 1"
           rotation="0 0 0"
-          gltf-model="#office-plant-model"
-          clickable="name: Office Plant"
+          gltf-model="#lamp-model"
+          clickable="name: Lamp"
         >
         </a-entity>
         <a-entity
-          sound="src: #office-ambience; autoplay: true; loop: true; volume: 0.2"
+          sound="src: #lamp-switch; autoplay: true; loop: true; volume: 0.2"
         ></a-entity>
       </a-marker>
 
