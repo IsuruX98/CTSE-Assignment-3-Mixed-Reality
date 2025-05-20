@@ -13,6 +13,36 @@
     <!-- Include particle system for effects -->
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.9/dist/aframe-particle-system-component.min.js"></script>
     <style>
+      :root {
+        --primary-color: #1a1a1a;
+        --secondary-color: #2d2d2d;
+        --accent-color: #00a8ff;
+        --accent-hover: #0097e6;
+        --text-color: #ffffff;
+        --text-secondary: #b2bec3;
+        --success-color: #00b894;
+        --warning-color: #fdcb6e;
+        --error-color: #d63031;
+        --glass-bg: rgba(26, 26, 26, 0.85);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
       #arjsDebugUIContainer {
         display: none;
       }
@@ -24,7 +54,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #3a7734;
+        background-color: var(--primary-color);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -34,43 +64,48 @@
       }
 
       .loading-title {
-        font-family: "Arial", sans-serif;
-        font-size: 2.5rem;
-        color: white;
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        color: var(--text-color);
+        margin-bottom: 2rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        font-weight: 700;
+        letter-spacing: -0.5px;
       }
 
       .spinner {
-        width: 60px;
-        height: 60px;
-        border: 8px solid rgba(255, 255, 255, 0.3);
+        width: clamp(40px, 8vw, 60px);
+        height: clamp(40px, 8vw, 60px);
+        border: 4px solid rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        border-top-color: white;
+        border-top-color: var(--accent-color);
         animation: spin 1s ease-in-out infinite;
       }
 
       .loading-progress {
-        width: 80%;
-        max-width: 300px;
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 5px;
-        margin-top: 20px;
+        width: min(80%, 300px);
+        height: 6px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin-top: 2rem;
         overflow: hidden;
       }
 
       .progress-bar {
         height: 100%;
         width: 0%;
-        background-color: white;
+        background: linear-gradient(
+          90deg,
+          var(--accent-color),
+          var(--accent-hover)
+        );
         transition: width 0.3s ease;
       }
 
       .loading-text {
-        color: white;
-        margin-top: 10px;
-        font-family: "Arial", sans-serif;
+        color: var(--text-secondary);
+        margin-top: 1rem;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        opacity: 0.8;
       }
 
       @keyframes spin {
@@ -82,41 +117,45 @@
       /* Enhanced UI Styles */
       .instructions {
         position: fixed;
-        top: 10px;
-        width: 100%;
+        top: clamp(10px, 3vw, 20px);
+        width: min(90%, 600px);
         text-align: center;
-        color: white;
-        background-color: rgba(0, 0, 0, 0.6);
-        padding: 12px;
+        color: var(--text-color);
+        background: var(--glass-bg);
+        padding: clamp(12px, 3vw, 20px);
         z-index: 999;
-        font-family: "Arial", sans-serif;
-        border-radius: 8px;
-        max-width: 90%;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        border-radius: 16px;
         margin: 0 auto;
         left: 0;
         right: 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        transform: translateY(0);
+        transition: transform 0.3s ease;
       }
 
       .info-panel {
         position: fixed;
-        bottom: 20px;
-        left: 20px;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
+        bottom: clamp(20px, 5vw, 40px);
+        left: clamp(20px, 5vw, 40px);
+        background: var(--glass-bg);
+        color: var(--text-color);
+        padding: clamp(15px, 3vw, 25px);
+        border-radius: 16px;
         z-index: 999;
         display: none;
-        font-family: "Arial", sans-serif;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         transform: translateY(20px);
         opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
+        transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
+        max-width: min(90%, 400px);
       }
 
       .info-panel.visible {
@@ -126,86 +165,170 @@
 
       .buttons {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        bottom: clamp(20px, 5vw, 40px);
+        right: clamp(20px, 5vw, 40px);
         z-index: 999;
         display: flex;
         flex-direction: column;
+        gap: 12px;
       }
 
       .ar-button {
-        padding: 12px 15px;
-        margin: 5px;
-        background-color: rgba(0, 128, 255, 0.8);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-family: "Arial", sans-serif;
-        font-weight: bold;
+        padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
+        background: var(--glass-bg);
+        color: var(--text-color);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: clamp(0.875rem, 2vw, 1rem);
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .ar-button:hover {
-        background-color: rgba(0, 128, 255, 0.9);
-        transform: scale(1.05);
+        background: var(--accent-color);
+        transform: translateY(-2px);
       }
 
       .ar-button:active {
-        transform: scale(0.95);
+        transform: translateY(0);
       }
 
-      /* Marker detection indicator */
       .marker-indicator {
         position: fixed;
-        top: 70px;
-        right: 20px;
-        background-color: rgba(0, 0, 0, 0.6);
-        color: white;
-        padding: 10px;
-        border-radius: 8px;
+        top: clamp(70px, 10vw, 100px);
+        right: clamp(20px, 5vw, 40px);
+        background: var(--glass-bg);
+        color: var(--text-color);
+        padding: clamp(10px, 2vw, 15px) clamp(15px, 3vw, 25px);
+        border-radius: 12px;
         z-index: 999;
-        font-family: "Arial", sans-serif;
         display: none;
         align-items: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        font-size: clamp(0.875rem, 2vw, 1rem);
       }
 
       .indicator-dot {
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        background-color: red;
-        margin-right: 8px;
+        background-color: var(--error-color);
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
       }
 
       .indicator-dot.active {
-        background-color: #4caf50;
+        background-color: var(--success-color);
       }
 
-      /* Toast notification */
       .toast {
         position: fixed;
-        top: 80px;
+        top: clamp(80px, 10vw, 120px);
         left: 50%;
         transform: translateX(-50%) translateY(-100px);
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
+        background: var(--glass-bg);
+        color: var(--text-color);
+        padding: clamp(12px, 2vw, 18px) clamp(20px, 3vw, 30px);
+        border-radius: 12px;
         z-index: 1000;
-        font-family: "Arial", sans-serif;
+        font-size: clamp(0.875rem, 2vw, 1rem);
         opacity: 0;
-        transition: transform 0.5s ease, opacity 0.5s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        max-width: min(90%, 400px);
+        text-align: center;
       }
 
       .toast.show {
         transform: translateX(-50%) translateY(0);
         opacity: 1;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .buttons {
+          bottom: 20px;
+          right: 20px;
+        }
+
+        .info-panel {
+          bottom: 20px;
+          left: 20px;
+        }
+
+        .marker-indicator {
+          top: 70px;
+          right: 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .instructions {
+          top: 10px;
+          padding: 12px;
+        }
+
+        .ar-button {
+          padding: 10px 15px;
+        }
+      }
+
+      /* Student Details Panel */
+      .student-details {
+        position: fixed;
+        top: clamp(70px, 10vw, 100px);
+        left: clamp(20px, 5vw, 40px);
+        background: var(--glass-bg);
+        color: var(--text-color);
+        padding: clamp(15px, 3vw, 25px);
+        border-radius: 16px;
+        z-index: 999;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        max-width: min(90%, 400px);
+        transform: translateX(-120%);
+        transition: transform 0.3s ease;
+      }
+
+      .student-details.visible {
+        transform: translateX(0);
+      }
+
+      .student-details h3 {
+        margin-bottom: 15px;
+        color: var(--accent-color);
+        font-size: 1.1em;
+      }
+
+      .student-details p {
+        margin: 8px 0;
+        color: var(--text-secondary);
+      }
+
+      .student-details strong {
+        color: var(--text-color);
+      }
+
+      /* Improved a-scene styling */
+      .a-canvas {
+        border-radius: 20px;
+        box-shadow: var(--glass-shadow);
       }
     </style>
 
@@ -281,46 +404,16 @@
           : "Mute Sounds";
       }
 
-      // Function to toggle day/night mode
-      function toggleDayNight() {
-        let scene = document.querySelector("a-scene");
-        let currentMode = scene.getAttribute("data-mode") || "day";
+      // Function to toggle student details
+      function toggleStudentDetails() {
+        const detailsPanel = document.getElementById("student-details");
+        detailsPanel.classList.toggle("visible");
 
-        if (currentMode === "day") {
-          // Switch to night mode
-          scene.setAttribute("data-mode", "night");
-          scene.setAttribute("fog", "color: #001; density: 0.05");
-          // Add some stars
-          if (!document.querySelector("#night-sky")) {
-            let sky = document.createElement("a-entity");
-            sky.id = "night-sky";
-            sky.setAttribute(
-              "particle-system",
-              "preset: stars; particleCount: 100; size: 0.5; color: #FFF"
-            );
-            sky.setAttribute("position", "0 10 0");
-            scene.appendChild(sky);
-          } else {
-            document.querySelector("#night-sky").setAttribute("visible", true);
-          }
-          document.getElementById("day-night-btn").textContent =
-            "Switch to Day";
-
-          // Show toast notification
-          showToast("Night mode activated");
-        } else {
-          // Switch to day mode
-          scene.setAttribute("data-mode", "day");
-          scene.removeAttribute("fog");
-          if (document.querySelector("#night-sky")) {
-            document.querySelector("#night-sky").setAttribute("visible", false);
-          }
-          document.getElementById("day-night-btn").textContent =
-            "Switch to Night";
-
-          // Show toast notification
-          showToast("Day mode activated");
-        }
+        // Update button text
+        const button = document.getElementById("student-details-btn");
+        button.textContent = detailsPanel.classList.contains("visible")
+          ? "Hide Details"
+          : "Show Details";
       }
 
       // Function to show toast notification
@@ -418,6 +511,15 @@
 
     <div class="instructions">Point camera at markers to see park objects</div>
 
+    <!-- Student Details Panel -->
+    <div id="student-details" class="student-details">
+      <h3>Student Details</h3>
+      <p><strong>Tree Marker:</strong> Thuduwage I.M.H.G</p>
+      <p><strong>Playground Marker:</strong> Arandara.S.D</p>
+      <p><strong>Flowers Marker:</strong> Karunarathne R.Y.D.</p>
+      <p><strong>Fountain Marker:</strong> Kodithuwakku C.K.</p>
+    </div>
+
     <div id="info-panel" class="info-panel">
       <span id="info-text">Object information</span>
     </div>
@@ -433,14 +535,19 @@
       <button class="ar-button" id="sound-btn" onclick="toggleSound()">
         Mute Sounds
       </button>
-      <button class="ar-button" id="day-night-btn" onclick="toggleDayNight()">
-        Switch to Night
+      <button
+        class="ar-button"
+        id="student-details-btn"
+        onclick="toggleStudentDetails()"
+      >
+        Show Details
       </button>
     </div>
 
     <a-scene
       embedded
       arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;"
+      style="border-radius: 20px; overflow: hidden"
     >
       <!-- Asset Management System -->
       <a-assets>
@@ -489,9 +596,8 @@
       </a-assets>
 
       <!-- Tree Marker -->
-      <!-- Member: Palliyaguru P.N.A -->
+      <!-- Member: Thuduwage I.M.H.G -->
       <a-marker type="pattern" id="tree-marker" url="markers/tree-marker.patt">
-        <!-- Tree 3D model -->
         <a-entity
           position="0 0 0"
           scale="0.7 0.7 0.7"
@@ -501,21 +607,18 @@
           animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
         >
         </a-entity>
-
-        <!-- Bird sound on this marker -->
         <a-entity
           sound="src: #bird-sound; autoplay: true; loop: true; volume: 0.5"
         ></a-entity>
       </a-marker>
 
       <!-- Playground Slide Marker -->
-      <!-- Member: Maleesha K.L.D.D.S -->
+      <!-- Member: Arandara.S.D -->
       <a-marker
         type="pattern"
         url="markers/playground-marker.patt"
         id="playground-marker"
       >
-        <!-- Slide 3D model -->
         <a-entity
           position="0 0 0"
           scale="9 9 9"
@@ -524,21 +627,18 @@
           clickable="name: Playground Slide"
         >
         </a-entity>
-
-        <!-- Children playing sound -->
         <a-entity
           sound="src: #children-sound; autoplay: true; loop: true; volume: 0.5"
         ></a-entity>
       </a-marker>
 
       <!-- Flowers Marker -->
-      <!-- Member: Heshan W.A.S -->
+      <!-- Member: Karunarathne R.Y.D. -->
       <a-marker
         type="pattern"
         url="markers/flowers-marker.patt"
         id="flowers-marker"
       >
-        <!-- Flowers 3D model -->
         <a-entity
           position="-0.5 0 0"
           scale="0.8 0.8 0.8"
@@ -547,7 +647,6 @@
           clickable="name: Flower Bed"
         >
         </a-entity>
-
         <a-entity
           position="1 0 0"
           scale="0.01 0.01 0.01"
@@ -556,7 +655,6 @@
           clickable="name: Flower Bed"
         >
         </a-entity>
-
         <a-entity
           position="0 0 0.5"
           scale="0.01 0.01 0.01"
@@ -568,13 +666,12 @@
       </a-marker>
 
       <!-- Fountain Marker -->
-      <!-- Member: Nadeeshan I.U.N -->
+      <!-- Member: Kodithuwakku C.K. -->
       <a-marker
         type="pattern"
         url="markers/fountain-marker.patt"
         id="fountain-marker"
       >
-        <!-- Fountain 3D model -->
         <a-entity
           position="0 0 0"
           scale="1 1 1"
@@ -583,7 +680,6 @@
           clickable="name: Fountain"
         >
         </a-entity>
-
         <a-entity
           sound="src: #fountain-sound; autoplay: true; loop: true; volume: 0.5"
         ></a-entity>
