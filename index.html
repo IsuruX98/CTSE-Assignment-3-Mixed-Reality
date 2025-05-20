@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Park AR Experience</title>
+    <!-- Include A-Frame -->
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <!-- Include AR.js -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <!-- Include animation component -->
+    <script src="https://unpkg.com/aframe-animation-component@5.1.2/dist/aframe-animation-component.min.js"></script>
+    <!-- Include particle system for effects -->
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.9/dist/aframe-particle-system-component.min.js"></script>
+    <style>
+      #arjsDebugUIContainer {
+        display: none;
+      }
+
+      /* Loading Screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #3a7734;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+
+      .loading-title {
+        font-family: "Arial", sans-serif;
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      .loading-progress {
+        width: 80%;
+        max-width: 300px;
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 5px;
+        margin-top: 20px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background-color: white;
+        transition: width 0.3s ease;
+      }
+
+      .loading-text {
+        color: white;
+        margin-top: 10px;
+        font-family: "Arial", sans-serif;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Enhanced UI Styles */
+      .instructions {
+        position: fixed;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 12px;
+        z-index: 999;
+        font-family: "Arial", sans-serif;
+        border-radius: 8px;
+        max-width: 90%;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+
+      .info-panel {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        z-index: 999;
+        display: none;
+        font-family: "Arial", sans-serif;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      .info-panel.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .buttons {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ar-button {
+        padding: 12px 15px;
+        margin: 5px;
+        background-color: rgba(0, 128, 255, 0.8);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+
+      .ar-button:hover {
+        background-color: rgba(0, 128, 255, 0.9);
+        transform: scale(1.05);
+      }
+
+      .ar-button:active {
+        transform: scale(0.95);
+      }
+
+      /* Marker detection indicator */
+      .marker-indicator {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        z-index: 999;
+        font-family: "Arial", sans-serif;
+        display: none;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .indicator-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: red;
+        margin-right: 8px;
+      }
+
+      .indicator-dot.active {
+        background-color: #4caf50;
+      }
+
+      /* Toast notification */
+      .toast {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 1000;
+        font-family: "Arial", sans-serif;
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    </style>
+
+    <script>
+      // Custom component for handling click interactions on 3D models
+      AFRAME.registerComponent("clickable", {
+        init: function () {
+          let el = this.el;
+          let modelName = this.data.name || "park object";
+
+          // Add click event listener
+          el.addEventListener("click", function () {
+            // Play animation
+            el.setAttribute("animation", {
+              property: "scale",
+              to: "0.7 0.7 0.7",
+              dur: 200,
+              easing: "easeOutQuad",
+              loop: false,
+              dir: "alternate",
+            });
+
+            // Show info
+            const infoPanel = document.getElementById("info-panel");
+            document.getElementById("info-text").textContent =
+              "You clicked on: " + modelName;
+            infoPanel.style.display = "block";
+
+            // Add visible class for animation
+            setTimeout(() => {
+              infoPanel.classList.add("visible");
+            }, 10);
+
+            // Hide info after 3 seconds
+            setTimeout(function () {
+              infoPanel.classList.remove("visible");
+              setTimeout(() => {
+                infoPanel.style.display = "none";
+              }, 300);
+            }, 3000);
+
+            // Show toast notification
+            showToast("Interacting with " + modelName);
+          });
+        },
+        schema: {
+          name: { type: "string", default: "" },
+        },
+      });
+
+      // Function to toggle sound
+      function toggleSound() {
+        // Get all sound entities
+        let sounds = document.querySelectorAll("[sound]");
+        let isMuted = false;
+
+        sounds.forEach(function (sound) {
+          let component = sound.components.sound;
+          if (component.isPlaying) {
+            component.pauseSound();
+            isMuted = true;
+          } else {
+            component.playSound();
+          }
+        });
+
+        // Show toast notification
+        showToast(isMuted ? "Sounds muted" : "Sounds enabled");
+
+        // Update button text
+        document.getElementById("sound-btn").textContent = isMuted
+          ? "Enable Sounds"
+          : "Mute Sounds";
+      }
+
+      // Function to toggle day/night mode
+      function toggleDayNight() {
+        let scene = document.querySelector("a-scene");
+        let currentMode = scene.getAttribute("data-mode") || "day";
+
+        if (currentMode === "day") {
+          // Switch to night mode
+          scene.setAttribute("data-mode", "night");
+          scene.setAttribute("fog", "color: #001; density: 0.05");
+          // Add some stars
+          if (!document.querySelector("#night-sky")) {
+            let sky = document.createElement("a-entity");
+            sky.id = "night-sky";
+            sky.setAttribute(
+              "particle-system",
+              "preset: stars; particleCount: 100; size: 0.5; color: #FFF"
+            );
+            sky.setAttribute("position", "0 10 0");
+            scene.appendChild(sky);
+          } else {
+            document.querySelector("#night-sky").setAttribute("visible", true);
+          }
+          document.getElementById("day-night-btn").textContent =
+            "Switch to Day";
+
+          // Show toast notification
+          showToast("Night mode activated");
+        } else {
+          // Switch to day mode
+          scene.setAttribute("data-mode", "day");
+          scene.removeAttribute("fog");
+          if (document.querySelector("#night-sky")) {
+            document.querySelector("#night-sky").setAttribute("visible", false);
+          }
+          document.getElementById("day-night-btn").textContent =
+            "Switch to Night";
+
+          // Show toast notification
+          showToast("Day mode activated");
+        }
+      }
+
+      // Function to show toast notification
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2000);
+      }
+
+      // Function to simulate loading progress
+      function simulateLoading() {
+        const progressBar = document.querySelector(".progress-bar");
+        const loadingText = document.querySelector(".loading-text");
+        const loadingScreen = document.querySelector(".loading-screen");
+
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 10;
+          if (progress > 100) progress = 100;
+
+          progressBar.style.width = progress + "%";
+          loadingText.textContent = `Loading assets... ${Math.floor(
+            progress
+          )}%`;
+
+          if (progress === 100) {
+            clearInterval(interval);
+            loadingText.textContent = "Ready! Starting AR experience...";
+
+            setTimeout(() => {
+              loadingScreen.style.opacity = "0";
+              setTimeout(() => {
+                loadingScreen.style.display = "none";
+                // Show marker indicator after loading
+                document.querySelector(".marker-indicator").style.display =
+                  "flex";
+                // Show initial toast
+                showToast("AR Experience started! Point camera at markers");
+              }, 500);
+            }, 1000);
+          }
+        }, 200);
+      }
+
+      // Function to update marker detection indicator
+      function updateMarkerIndicator(isDetected) {
+        const indicator = document.querySelector(".indicator-dot");
+        if (isDetected) {
+          indicator.classList.add("active");
+          document.getElementById("indicator-text").textContent =
+            "Marker detected";
+        } else {
+          indicator.classList.remove("active");
+          document.getElementById("indicator-text").textContent =
+            "Searching for markers...";
+        }
+      }
+
+      // Initialize when document is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Start loading simulation
+        simulateLoading();
+
+        // Set up marker detection events
+        setTimeout(() => {
+          const markers = document.querySelectorAll("a-marker");
+          markers.forEach((marker) => {
+            marker.addEventListener("markerFound", function () {
+              updateMarkerIndicator(true);
+              showToast(`Found ${marker.id.replace("-marker", "")} marker!`);
+            });
+
+            marker.addEventListener("markerLost", function () {
+              updateMarkerIndicator(false);
+            });
+          });
+        }, 5000); // Wait for AR.js to initialize
+      });
+    </script>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <h1 class="loading-title">Park AR Experience</h1>
+      <div class="spinner"></div>
+      <div class="loading-progress">
+        <div class="progress-bar"></div>
+      </div>
+      <p class="loading-text">Loading assets... 0%</p>
+    </div>
+
+    <div class="instructions">Point camera at markers to see park objects</div>
+
+    <div id="info-panel" class="info-panel">
+      <span id="info-text">Object information</span>
+    </div>
+
+    <div class="marker-indicator">
+      <div class="indicator-dot"></div>
+      <span id="indicator-text">Searching for markers...</span>
+    </div>
+
+    <div id="toast" class="toast">Notification message</div>
+
+    <div class="buttons">
+      <button class="ar-button" id="sound-btn" onclick="toggleSound()">
+        Mute Sounds
+      </button>
+      <button class="ar-button" id="day-night-btn" onclick="toggleDayNight()">
+        Switch to Night
+      </button>
+    </div>
+
+    <a-scene
+      embedded
+      arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;"
+    >
+      <!-- Asset Management System -->
+      <a-assets>
+        <!-- Sound effects -->
+        <audio
+          id="bird-sound"
+          src="sounds/bird-chirping.mp3"
+          preload="auto"
+        ></audio>
+        <audio
+          id="fountain-sound"
+          src="sounds/fountain.mp3"
+          preload="auto"
+        ></audio>
+        <audio
+          id="children-sound"
+          src="sounds/children-playing.mp3"
+          preload="auto"
+        ></audio>
+        <audio
+          id="nature-sound"
+          src="sounds/nature-ambience.mp3"
+          preload="auto"
+        ></audio>
+
+        <!-- 3D models - Update these paths to your actual model files -->
+        <a-asset-item id="tree-model" src="models/tree.glb"></a-asset-item>
+        <a-asset-item id="bench-model" src="models/bench.glb"></a-asset-item>
+        <a-asset-item
+          id="fountain-model"
+          src="models/horse_fountain.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="playground-model"
+          src="models/playground_set.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="flowers-model"
+          src="models/flowers.glb"
+        ></a-asset-item>
+        <a-asset-item id="flower-model" src="models/flower.glb"></a-asset-item>
+        <a-asset-item
+          id="colored-flower-model"
+          src="models/colored_flower.glb"
+        ></a-asset-item>
+      </a-assets>
+
+      <!-- Tree Marker -->
+      <!-- Member: Palliyaguru P.N.A -->
+      <a-marker type="pattern" id="tree-marker" url="markers/tree-marker.patt">
+        <!-- Tree 3D model -->
+        <a-entity
+          position="0 0 0"
+          scale="0.7 0.7 0.7"
+          rotation="0 0 0"
+          gltf-model="#tree-model"
+          clickable="name: Park Tree"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
+        >
+        </a-entity>
+
+        <!-- Bird sound on this marker -->
+        <a-entity
+          sound="src: #bird-sound; autoplay: true; loop: true; volume: 0.5"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Playground Slide Marker -->
+      <!-- Member: Maleesha K.L.D.D.S -->
+      <a-marker
+        type="pattern"
+        url="markers/playground-marker.patt"
+        id="playground-marker"
+      >
+        <!-- Slide 3D model -->
+        <a-entity
+          position="0 0 0"
+          scale="9 9 9"
+          rotation="0 0 0"
+          gltf-model="#playground-model"
+          clickable="name: Playground Slide"
+        >
+        </a-entity>
+
+        <!-- Children playing sound -->
+        <a-entity
+          sound="src: #children-sound; autoplay: true; loop: true; volume: 0.5"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Flowers Marker -->
+      <!-- Member: Heshan W.A.S -->
+      <a-marker
+        type="pattern"
+        url="markers/flowers-marker.patt"
+        id="flowers-marker"
+      >
+        <!-- Flowers 3D model -->
+        <a-entity
+          position="-0.5 0 0"
+          scale="0.8 0.8 0.8"
+          rotation="0 0 0"
+          gltf-model="#flowers-model"
+          clickable="name: Flower Bed"
+        >
+        </a-entity>
+
+        <a-entity
+          position="1 0 0"
+          scale="0.01 0.01 0.01"
+          rotation="0 0 0"
+          gltf-model="#flower-model"
+          clickable="name: Flower Bed"
+        >
+        </a-entity>
+
+        <a-entity
+          position="0 0 0.5"
+          scale="0.01 0.01 0.01"
+          rotation="0 0 0"
+          gltf-model="#colored-flower-model"
+          clickable="name: Flower Bed"
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- Fountain Marker -->
+      <!-- Member: Nadeeshan I.U.N -->
+      <a-marker
+        type="pattern"
+        url="markers/fountain-marker.patt"
+        id="fountain-marker"
+      >
+        <!-- Fountain 3D model -->
+        <a-entity
+          position="0 0 0"
+          scale="1 1 1"
+          rotation="0 0 0"
+          gltf-model="#fountain-model"
+          clickable="name: Fountain"
+        >
+        </a-entity>
+
+        <a-entity
+          sound="src: #fountain-sound; autoplay: true; loop: true; volume: 0.5"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Bench Marker -->
+      <!-- Member: Doranegoda D.A.K.S.M -->
+      <a-marker
+        type="pattern"
+        id="bench-marker"
+        url="markers/bench-marker.patt"
+      >
+        <!-- Bench 3D model -->
+        <a-entity
+          position="0 0 0"
+          scale="0.8 0.8 0.8"
+          rotation="0 0 0"
+          gltf-model="#bench-model"
+          clickable="name: Park Bench"
+          animation="property: position; to: 0 0.3 0; dir: alternate; loop: true; dur: 2000; easing: easeInOutQuad"
+        >
+        </a-entity>
+
+        <!-- Nature ambient sound -->
+        <a-entity
+          sound="src: #nature-sound; autoplay: true; loop: true; volume: 0.3"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Camera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
+</html>
