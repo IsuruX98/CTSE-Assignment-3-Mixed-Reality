@@ -520,6 +520,7 @@
         const progressBar = document.querySelector(".progress-bar");
         const loadingText = document.querySelector(".loading-text");
         const loadingScreen = document.querySelector(".loading-screen");
+        const scene = document.querySelector("a-scene");
 
         let progress = 0;
         const interval = setInterval(() => {
@@ -544,6 +545,14 @@
                   "flex";
                 // Show initial toast
                 showToast("AR Experience started! Point camera at markers");
+                // Ensure AR scene is visible and active
+                if (scene) {
+                  scene.style.display = "block";
+                  scene.setAttribute(
+                    "arjs",
+                    "detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;"
+                  );
+                }
               }, 500);
             }, 1000);
           }
@@ -631,13 +640,11 @@
         const permissionOverlay = document.getElementById("permission-overlay");
         permissionOverlay.style.display = "flex";
 
-        // Start loading simulation
-        simulateLoading();
-
-        // Initialize sounds after loading
-        setTimeout(() => {
-          initializeSounds();
-        }, 5000); // Wait for AR.js to initialize
+        // Hide AR scene initially
+        const scene = document.querySelector("a-scene");
+        if (scene) {
+          scene.style.display = "none";
+        }
 
         // Set up marker detection events
         setTimeout(() => {
