@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Park AR Experience</title>
+    <title>Office AR Experience</title>
     <!-- Include A-Frame -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <!-- Include AR.js -->
@@ -412,7 +412,7 @@
       AFRAME.registerComponent("clickable", {
         init: function () {
           let el = this.el;
-          let modelName = this.data.name || "park object";
+          let modelName = this.data.name || "office object";
 
           // Add click event listener
           el.addEventListener("click", function () {
