@@ -330,6 +330,81 @@
         border-radius: 20px;
         box-shadow: var(--glass-shadow);
       }
+
+      /* Permission Overlay Styles */
+      .permission-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--glass-bg);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 20px;
+        text-align: center;
+      }
+
+      .permission-content {
+        background: var(--secondary-color);
+        padding: 30px;
+        border-radius: 16px;
+        max-width: 90%;
+        width: 400px;
+        box-shadow: var(--glass-shadow);
+        border: 1px solid var(--glass-border);
+      }
+
+      .permission-title {
+        color: var(--accent-color);
+        font-size: 1.5em;
+        margin-bottom: 20px;
+      }
+
+      .permission-text {
+        color: var(--text-color);
+        margin-bottom: 25px;
+        line-height: 1.6;
+      }
+
+      .permission-button {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px;
+      }
+
+      .permission-button:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+      }
+
+      .permission-status {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9em;
+      }
+
+      .permission-status.success {
+        background: rgba(0, 184, 148, 0.2);
+        color: var(--success-color);
+      }
+
+      .permission-status.error {
+        background: rgba(214, 48, 49, 0.2);
+        color: var(--error-color);
+      }
     </style>
 
     <script>
@@ -404,6 +479,19 @@
           : "Mute Sounds";
       }
 
+      // Function to initialize sounds
+      function initializeSounds() {
+        const sounds = document.querySelectorAll("[sound]");
+        sounds.forEach((sound) => {
+          const component = sound.components.sound;
+          if (component) {
+            component.playSound();
+          }
+        });
+        // Set initial button text
+        document.getElementById("sound-btn").textContent = "Mute Sounds";
+      }
+
       // Function to toggle student details
       function toggleStudentDetails() {
         const detailsPanel = document.getElementById("student-details");
@@ -476,10 +564,80 @@
         }
       }
 
+      // Permission handling
+      async function checkPermissions() {
+        const permissionOverlay = document.getElementById("permission-overlay");
+        const permissionStatus = document.getElementById("permission-status");
+
+        try {
+          // Check camera permission
+          const cameraPermission = await navigator.permissions.query({
+            name: "camera",
+          });
+
+          if (cameraPermission.state === "denied") {
+            permissionStatus.innerHTML =
+              "Camera access is required for AR experience. Please enable it in your browser settings.";
+            permissionStatus.className = "permission-status error";
+            return false;
+          }
+
+          // Request camera access
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          stream.getTracks().forEach((track) => track.stop()); // Stop the stream after getting permission
+
+          // Check device motion if available
+          if (window.DeviceMotionEvent) {
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+              try {
+                const motionPermission =
+                  await DeviceMotionEvent.requestPermission();
+                if (motionPermission !== "granted") {
+                  permissionStatus.innerHTML =
+                    "Motion sensor access is recommended for better AR experience.";
+                  permissionStatus.className = "permission-status error";
+                }
+              } catch (e) {
+                console.log("Device motion permission not available");
+              }
+            }
+          }
+
+          permissionStatus.innerHTML =
+            "All permissions granted! Starting AR experience...";
+          permissionStatus.className = "permission-status success";
+
+          // Hide permission overlay after success
+          setTimeout(() => {
+            permissionOverlay.style.display = "none";
+            // Start the AR experience
+            simulateLoading();
+          }, 1500);
+
+          return true;
+        } catch (error) {
+          permissionStatus.innerHTML =
+            "Error accessing camera. Please ensure camera permissions are granted.";
+          permissionStatus.className = "permission-status error";
+          return false;
+        }
+      }
+
       // Initialize when document is loaded
       document.addEventListener("DOMContentLoaded", function () {
+        // Show permission overlay first
+        const permissionOverlay = document.getElementById("permission-overlay");
+        permissionOverlay.style.display = "flex";
+
         // Start loading simulation
         simulateLoading();
+
+        // Initialize sounds after loading
+        setTimeout(() => {
+          initializeSounds();
+        }, 5000); // Wait for AR.js to initialize
 
         // Set up marker detection events
         setTimeout(() => {
@@ -499,9 +657,24 @@
     </script>
   </head>
   <body style="margin: 0; overflow: hidden">
+    <!-- Permission Overlay -->
+    <div id="permission-overlay" class="permission-overlay">
+      <div class="permission-content">
+        <h2 class="permission-title">AR Experience Permissions</h2>
+        <p class="permission-text">
+          This AR experience requires access to your camera and motion sensors
+          to work properly. Please grant the necessary permissions to continue.
+        </p>
+        <button class="permission-button" onclick="checkPermissions()">
+          Grant Permissions
+        </button>
+        <div id="permission-status" class="permission-status"></div>
+      </div>
+    </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen">
-      <h1 class="loading-title">Park AR Experience</h1>
+      <h1 class="loading-title">Office AR Experience</h1>
       <div class="spinner"></div>
       <div class="loading-progress">
         <div class="progress-bar"></div>
@@ -509,7 +682,9 @@
       <p class="loading-text">Loading assets... 0%</p>
     </div>
 
-    <div class="instructions">Point camera at markers to see park objects</div>
+    <div class="instructions">
+      Point camera at markers to see office objects
+    </div>
 
     <!-- Student Details Panel -->
     <div id="student-details" class="student-details">
