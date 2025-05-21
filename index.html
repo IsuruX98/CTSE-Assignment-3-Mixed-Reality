@@ -405,11 +405,6 @@
         background: rgba(214, 48, 49, 0.2);
         color: var(--error-color);
       }
-
-      .permission-status.warning {
-        background: rgba(253, 203, 110, 0.2);
-        color: var(--warning-color);
-      }
     </style>
 
     <script>
@@ -593,62 +588,33 @@
           });
           stream.getTracks().forEach((track) => track.stop()); // Stop the stream after getting permission
 
-          // Request motion and orientation permissions
-          let motionGranted = false;
-          let orientationGranted = false;
-
-          // Request motion permission
-          if (
-            window.DeviceMotionEvent &&
-            typeof DeviceMotionEvent.requestPermission === "function"
-          ) {
-            try {
-              const motionPermission =
-                await DeviceMotionEvent.requestPermission();
-              motionGranted = motionPermission === "granted";
-            } catch (e) {
-              console.log("Device motion permission not available");
+          // Check device motion if available
+          if (window.DeviceMotionEvent) {
+            if (typeof DeviceMotionEvent.requestPermission === "function") {
+              try {
+                const motionPermission =
+                  await DeviceMotionEvent.requestPermission();
+                if (motionPermission !== "granted") {
+                  permissionStatus.innerHTML =
+                    "Motion sensor access is recommended for better AR experience.";
+                  permissionStatus.className = "permission-status error";
+                }
+              } catch (e) {
+                console.log("Device motion permission not available");
+              }
             }
           }
 
-          // Request orientation permission
-          if (
-            window.DeviceOrientationEvent &&
-            typeof DeviceOrientationEvent.requestPermission === "function"
-          ) {
-            try {
-              const orientationPermission =
-                await DeviceOrientationEvent.requestPermission();
-              orientationGranted = orientationPermission === "granted";
-            } catch (e) {
-              console.log("Device orientation permission not available");
-            }
-          }
-
-          // Update status message based on permissions
-          let statusMessage =
+          permissionStatus.innerHTML =
             "All permissions granted! Starting AR experience...";
-          if (!motionGranted || !orientationGranted) {
-            statusMessage = "Camera access granted. ";
-            if (!motionGranted)
-              statusMessage += "Motion sensor access is recommended. ";
-            if (!orientationGranted)
-              statusMessage += "Orientation sensor access is recommended. ";
-            statusMessage +=
-              "You can enable these in your browser settings for a better experience.";
-            permissionStatus.className = "permission-status warning";
-          } else {
-            permissionStatus.className = "permission-status success";
-          }
-
-          permissionStatus.innerHTML = statusMessage;
+          permissionStatus.className = "permission-status success";
 
           // Hide permission overlay after success
           setTimeout(() => {
             permissionOverlay.style.display = "none";
             // Start the AR experience
             simulateLoading();
-          }, 2000);
+          }, 1500);
 
           return true;
         } catch (error) {
@@ -696,9 +662,8 @@
       <div class="permission-content">
         <h2 class="permission-title">AR Experience Permissions</h2>
         <p class="permission-text">
-          This AR experience requires access to your camera, motion sensors, and
-          device orientation to work properly. Please grant the necessary
-          permissions to continue.
+          This AR experience requires access to your camera and motion sensors
+          to work properly. Please grant the necessary permissions to continue.
         </p>
         <button class="permission-button" onclick="checkPermissions()">
           Grant Permissions
